@@ -1,10 +1,13 @@
 package com.example.services;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -116,8 +119,37 @@ class ProductServiceImplTest {
 	}
 
 	@Test
-	void testFindAll() {
-		fail("Not yet implemented");
+	@DisplayName("Test para recuperar los dos productos creados")
+	void testFindAllProducts() {
+
+		given(productDao.findAll()).willReturn(productsList);
+		
+		List<Product> productsList = productServiceImpl.findAll();
+		
+		assertEquals(2, productsList.size());
+	}
+	
+	@Test
+	@DisplayName("Test para recuperar una lista vacia de productos")
+	void testEmptyProductList() {
+		
+		// given 
+		given(productDao.findAll()).willReturn(Collections.emptyList());
+		
+		// when
+		List<Product> products = productServiceImpl.findAll();
+		
+		
+		// then
+		assertThat(products).isEmpty();
 	}
 
 }
+
+
+
+
+
+
+
+
