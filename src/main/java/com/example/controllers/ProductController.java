@@ -116,13 +116,13 @@ public class ProductController {
             // Implica devolver los productos paginados, es decir, una pagina de Product
             Page<Product> productPage = productService.findAll(pageable);
             products = productPage.getContent();
-            responseAsMap.put("productos", products);
+            responseAsMap.put("products", products);
 
         } else {
 
             // Devolver los productos ordenados, por nombre (name), por ejemplo
             products = productService.findAll(sort);
-            responseAsMap.put("productos", products);
+            responseAsMap.put("products", products);
         }
 
         return new ResponseEntity<>(responseAsMap, HttpStatus.OK);
