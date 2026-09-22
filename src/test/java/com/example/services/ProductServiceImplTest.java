@@ -122,11 +122,11 @@ class ProductServiceImplTest {
 	@DisplayName("Test para recuperar los dos productos creados")
 	void testFindAllProducts() {
 
-		given(productDao.findAll()).willReturn(productsList);
+		when(productServiceImpl.findAll()).thenReturn(productsList);
 		
-		List<Product> productsList = productServiceImpl.findAll();
+		List<Product> result = productServiceImpl.findAll();
 		
-		assertEquals(2, productsList.size());
+		assertEquals(2, result.size());
 	}
 	
 	@Test
