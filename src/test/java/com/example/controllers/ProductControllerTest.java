@@ -140,7 +140,7 @@ class ProductControllerTest {
 
 	@Test
 	@DisplayName("Controller Test para Persistir un Producto")
-	void testSaveProduct() {
+	void testSaveProduct()  {
 		
 		// given
 		given(productService.save(any(Product.class)))
@@ -161,16 +161,13 @@ class ProductControllerTest {
 				    jsonStringProduct.getBytes());
 		
 		try {
-		  ResultActions response = mockMvc
+				mockMvc
 				    .perform(multipart("/products")
 					.file(bytesArrayProduct)
-					.file("file", null));
-		// then
-		  
-		  response
-		  	.andDo(print())
-		  	.andExpect(status().isCreated())
-		  	.andExpect(jsonPath("$.product.name",
+					.file("file", null))			    
+				    	.andDo(print())
+				    	.andExpect(status().isCreated())
+				    	.andExpect(jsonPath("$.product.name",
 		  			is(product1.getName())));
 		  	
 		  
