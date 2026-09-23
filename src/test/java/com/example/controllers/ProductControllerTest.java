@@ -1,5 +1,6 @@
 package com.example.controllers;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -17,11 +18,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase.Replace;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -141,7 +142,44 @@ class ProductControllerTest {
 	@DisplayName("Controller Test para Persistir un Producto")
 	void testSaveProduct() {
 		
+		// given
+		given(productService.save(any(Product.class)))
+			.willAnswer(invocation -> invocation.getArgument(0));
 		
+		// when
+		
+		/* Convertir el producto a formato JSON, es decir, una cadena (String)
+		 * en formato de JSON, lo cual hace el objectMapper que hemos inyectado como 
+		 * dependencia al principio de la clase bajo Test */
+		
+		String jsonStringProduct = objectMapper.writeValueAsString(product1);
+		
+		MockMultipartFile bytesArrayProduct = new MockMultipartFile(
+				    "product", 
+				    null, 
+				    "application/json", 
+				    jsonStringProduct.getBytes());
+		
+		try {
+		  ResultActions response = mockMvc
+				    .perform(multipart("/products")
+					.file(bytesArrayProduct)
+					.file("file", null));
+		// then
+		  
+		  response
+		  	.andDo(print())
+		  	.andExpect(status().isCreated())
+		  	.andExpect(jsonPath("$.product.name",
+		  			is(product1.getName())));
+		  	
+		  
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		// then
 		
 	}
 }
