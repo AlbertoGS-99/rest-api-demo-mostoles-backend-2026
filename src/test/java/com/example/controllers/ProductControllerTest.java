@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,38 +73,86 @@ class ProductControllerTest {
 
 	@Autowired
 	ObjectMapper objectMapper;
+	
+	List<Product> products = new ArrayList<>();
+	Presentation presentation1, presentation2;
+	Product product1, product2;
+	
+	@BeforeEach
+	void setUp() {
+		
+		presentation1 = Presentation.builder()
+				.name("decenas")
+				.description("Por decenas")
+				.build();
+		
+		presentation2 = Presentation.builder()
+				.name("unidades")
+				.description("Por unidades")
+				.build();
+			
+		product1 = Product.builder()
+				.name("Camara")
+				.description("HP Camara")
+				.price(new BigDecimal(500))
+				.stock(1900)
+				.productImage(null)
+				.presentation(presentation1)
+				.build();
+		
+			
+		product2 = Product.builder()
+				.name("Frigorifico")
+				.description("General Electric")
+				.price(new BigDecimal(2500))
+				.stock(3900)
+				.productImage(null)
+				.presentation(presentation2)
+				.build();
+		
+		products.add(product1);
+		products.add(product2);
+	}
 
 	@Test
 	@DisplayName("Controller Test que recupera todos los productos")
 	void testFindAll() throws Exception {
 
 		// given
-		List<Product> products = new ArrayList<>();
-
-		Presentation presetation = Presentation.builder().name("decenas").description("Por decenas").build();
-
-		Product product = Product.builder().name("Camara").description("HP Camara").price(new BigDecimal(500))
-				.stock(1900).productImage(null).presentation(presetation).build();
-
-		Presentation presetation1 = Presentation.builder().name("unidades").description("Por unidades").build();
-
-		Product product1 = Product.builder().name("Frigorifico").description("General Electric")
-				.price(new BigDecimal(2500)).stock(3900).productImage(null).presentation(presetation1).build();
-
-		products.add(product);
-		products.add(product1);
-
-		given(productService.findAll(Sort.by("name"))).willReturn(products);
+		
+		given(productService.findAll(Sort.by("name")))
+			.willReturn(products);
 
 		// when => Realizar la peticion (request) HTTP, mediante el metodo GET
 		// al end point de products ("/products"). Aqui se utiliza MockMvc
 
-		ResultActions response = mockMvc.perform(get("/products").accept(MediaType.APPLICATION_JSON));
+		ResultActions response = mockMvc
+				.perform(get("/products")
+				.accept(MediaType.APPLICATION_JSON));
 		// then
 
 		response.andExpect(status().isOk()).andDo(print())
-				.andExpect(jsonPath("$.products.size()", is(products.size())));
+				.andExpect(jsonPath("$.products.size()",
+						is(products.size())));
 
 	}
 
+	@Test
+	@DisplayName("Controller Test para Persistir un Producto")
+	void testSaveProduct() {
+		
+		
+		
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
