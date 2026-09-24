@@ -33,6 +33,7 @@ import com.example.services.ProductService;
 import com.example.utilities.FileDownloadUtil;
 import com.example.utilities.FileUploadUtil;
 
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 
 @WebMvcTest(ProductController.class)
@@ -216,15 +217,15 @@ class ProductControllerTest {
 	
 	@Test
 	@DisplayName("Controller Test para actualizar un Producto")
-	void testActualizarProducto() {
+	void testActualizarProducto() throws JacksonException, Exception {
 		
 		// given
 
-		int productoId = 1;
+		int productId = 1;
 
 		Presentation presentacionGuardada = Presentation.builder()
 				.description(null)
-				.name("docena")
+				.name("docenas")
 				.build();
 
 		Product productoGuardado = Product.builder()
@@ -238,7 +239,7 @@ class ProductControllerTest {
 		
 		Presentation presentacionActualizada = Presentation.builder()
 				.description(null)
-				.name("unidad")
+				.name("unidades")
 				.build();
 
 		Product productoActualizado = Product.builder()
@@ -250,7 +251,7 @@ class ProductControllerTest {
 				.productImage("perro.jpeg")
 				.build();
 		
-	      given(productService.findById(productoId))
+	      given(productService.findById(productId))
 	      		.willReturn(productoGuardado);
 	      
 	      given(productService.save(any(Product.class)))
@@ -263,10 +264,19 @@ class ProductControllerTest {
 	      // y por otra la imagen, hay que proceder de manera diferente (muy similar
 	      // al test de persistir un producto con su imagen)
 
-//ResultActions response = mockMvc.perform(put("/productos/{id}", productoId)
-//          .contentType(MediaType.APPLICATION_JSON)
-//          .content(objectMapper.writeValueAsString(productoActualizado))
-//          .header("Authorization", this.token));
+	      ResultActions response = mockMvc
+	    		  .perform(put("/products/{id}",
+	    				  productId)
+	    		  .contentType(MediaType.APPLICATION_JSON)
+	    		  .content(objectMapper
+	    				  .writeValueAsString(productoActualizado)));
+	      
+	   // then
+
+	      response.andExpect(status().isOk())
+	      			.andDo(print())
+	      			.andExpect(jsonPath("$.product.name",
+	      					is(productoActualizado.getName())));
 
 
 		
