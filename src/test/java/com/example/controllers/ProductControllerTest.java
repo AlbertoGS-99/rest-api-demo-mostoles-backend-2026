@@ -213,15 +213,62 @@ class ProductControllerTest {
 			.andDo(print())
 			.andExpect(status().isNotFound());
 	}
+	
+	@Test
+	@DisplayName("Controller Test para actualizar un Producto")
+	void testActualizarProducto() {
+		
+		// given
+
+		int productoId = 1;
+
+		Presentation presentacionGuardada = Presentation.builder()
+				.description(null)
+				.name("docena")
+				.build();
+
+		Product productoGuardado = Product.builder()
+				.name("Camara")
+				.description("Resolucion Alta")
+				.price(new BigDecimal(2000))
+				.stock(40)
+				.presentation(presentacionGuardada)
+				.productImage("perro.jpeg")
+				.build();
+		
+		Presentation presentacionActualizada = Presentation.builder()
+				.description(null)
+				.name("unidad")
+				.build();
+
+		Product productoActualizado = Product.builder()
+				.name("HDCamara")
+				.description("Muy Alta Resolucion")
+				.price(new BigDecimal(2500))
+				.stock(400)
+				.presentation(presentacionActualizada)
+				.productImage("perro.jpeg")
+				.build();
+		
+	      given(productService.findById(productoId))
+	      		.willReturn(productoGuardado);
+	      
+	      given(productService.save(any(Product.class)))
+          		.willAnswer(invocation -> invocation.getArgument(0));
+
+	      // when
+
+	      // Si todo el producto se recibe en el cuerpo de la peticion procedemos
+	      // de la forma siguiente, de lo contrario, si por una parte va el producto
+	      // y por otra la imagen, hay que proceder de manera diferente (muy similar
+	      // al test de persistir un producto con su imagen)
+
+//ResultActions response = mockMvc.perform(put("/productos/{id}", productoId)
+//          .contentType(MediaType.APPLICATION_JSON)
+//          .content(objectMapper.writeValueAsString(productoActualizado))
+//          .header("Authorization", this.token));
+
+
+		
+	}
 }
-
-
-
-
-
-
-
-
-
-
-
