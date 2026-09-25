@@ -80,20 +80,7 @@ class ProductServiceImplTest {
 				
 	}
 
-	@Test
-	void testFindAllPageable() {
-		fail("Not yet implemented");
-	}
 
-	@Test
-	void testFindAllSort() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	void testFindById() {
-		fail("Not yet implemented");
-	}
 
 	@Test
 	@DisplayName("Test del servicio para persistir un producto")
@@ -113,10 +100,6 @@ class ProductServiceImplTest {
 		assertThat(productoGuardado).isNotNull();
 	}
 
-	@Test
-	void testDelete() {
-		fail("Not yet implemented");
-	}
 
 	@Test
 	@DisplayName("Test para recuperar los dos productos creados")

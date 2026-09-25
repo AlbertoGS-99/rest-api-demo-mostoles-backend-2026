@@ -2,6 +2,7 @@ package com.example.controllers;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.hamcrest.CoreMatchers.is;
@@ -32,6 +33,7 @@ import com.example.entities.Product;
 import com.example.services.ProductService;
 import com.example.utilities.FileDownloadUtil;
 import com.example.utilities.FileUploadUtil;
+import com.example.utilities.FileUtil;
 
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
@@ -72,7 +74,10 @@ class ProductControllerTest {
 
 	@MockitoBean
 	FileDownloadUtil fileDownloadUtil;
-
+	
+	@MockitoBean
+	FileUtil fileUtil;
+	
 	@Autowired
 	ObjectMapper objectMapper;
 	
@@ -215,70 +220,69 @@ class ProductControllerTest {
 			.andExpect(status().isNotFound());
 	}
 	
-	@Test
-	@DisplayName("Controller Test para actualizar un Producto")
-	void testActualizarProducto() throws JacksonException, Exception {
-		
-		// given
+    @Test 
+    @DisplayName("Controller Test que actualiza un producto con su imagen")
+    void testUpdateProduct() throws Exception{
 
-		int productId = 1;
+        //given
+        int id = 1;
+        given(productService.findById(id)).willReturn(product1);
+        given(productService.save(any(Product.class)))
+                .willAnswer(invocation -> invocation.getArgument(0));
 
-		Presentation presentacionGuardada = Presentation.builder()
-				.description(null)
-				.name("docenas")
-				.build();
+        //when
+        String jsonStringProduct = objectMapper.writeValueAsString(product1);
 
-		Product productoGuardado = Product.builder()
-				.name("Camara")
-				.description("Resolucion Alta")
-				.price(new BigDecimal(2000))
-				.stock(40)
-				.presentation(presentacionGuardada)
-				.productImage("perro.jpeg")
-				.build();
-		
-		Presentation presentacionActualizada = Presentation.builder()
-				.description(null)
-				.name("unidades")
-				.build();
+        MockMultipartFile bytesArrayProduct = new MockMultipartFile("product", 
+                            null,
+                            "application/json",
+                            jsonStringProduct.getBytes());
 
-		Product productoActualizado = Product.builder()
-				.name("HDCamara")
-				.description("Muy Alta Resolucion")
-				.price(new BigDecimal(2500))
-				.stock(400)
-				.presentation(presentacionActualizada)
-				.productImage("perro.jpeg")
-				.build();
-		
-	      given(productService.findById(productId))
-	      		.willReturn(productoGuardado);
-	      
-	      given(productService.save(any(Product.class)))
-          		.willAnswer(invocation -> invocation.getArgument(0));
+        ResultActions response = this.mockMvc
+        		.perform(multipart("/products/{id}", id)
+                        .with(request -> {
+                            request.setMethod("PUT");
+                            return request;
+                        })
+                        .file("image", null)
+                        .file(bytesArrayProduct));
 
-	      // when
+        //then
+        response.andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$['producto actualizado: '].name",
+            		is(product1.getName())))
+            .andExpect(jsonPath("$['producto actualizado: '].description",
+            		is(product1.getDescription())));
+        
 
-	      // Si todo el producto se recibe en el cuerpo de la peticion procedemos
-	      // de la forma siguiente, de lo contrario, si por una parte va el producto
-	      // y por otra la imagen, hay que proceder de manera diferente (muy similar
-	      // al test de persistir un producto con su imagen)
+    }
+    
+    @Test 
+    @DisplayName("Controller Test que elimina un producto")
+    void testDeleteProduct() throws Exception{
 
-	      ResultActions response = mockMvc
-	    		  .perform(put("/products/{id}",
-	    				  productId)
-	    		  .contentType(MediaType.APPLICATION_JSON)
-	    		  .content(objectMapper
-	    				  .writeValueAsString(productoActualizado)));
-	      
-	   // then
+        //given
+        int ProductId = 1;
 
-	      response.andExpect(status().isOk())
-	      			.andDo(print())
-	      			.andExpect(jsonPath("$.product.name",
-	      					is(productoActualizado.getName())));
+        given(productService.findById(ProductId)).willReturn(product1);
+        doNothing().when(productService).delete(product1);
 
+        //when
+        mockMvc.perform(delete("/products/{id}", ProductId))
+                .andExpect(status().isOk());
 
-		
-	}
+    }
+	
 }
+
+
+
+
+
+
+
+
+
+
+
