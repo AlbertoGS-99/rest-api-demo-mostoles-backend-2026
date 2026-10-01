@@ -34,12 +34,9 @@ import lombok.ToString;
 )
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
+@Data
 @Builder
-public class User {
+public class MyUser {
 	
 	private static final long serialVersionUID = 1L;
 	

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.spring_security_jwt.model.ERole;
 import com.example.spring_security_jwt.model.Role;
-import com.example.spring_security_jwt.model.User;
+import com.example.spring_security_jwt.model.MyUser;
 import com.example.spring_security_jwt.payload.request.SignupRequest;
 import com.example.spring_security_jwt.payload.response.MessageResponse;
 import com.example.spring_security_jwt.repository.RoleRepository;
@@ -59,7 +59,7 @@ public class AuthController {
 			 * con las propiedades del JSON recibido en la peticion (signupRequest)
 			 */
 			
-			User user = User.builder()
+			MyUser myUser = MyUser.builder()
 					.username(signupRequest.getUsername())
 					.email(signupRequest.getEmail())
 					.password(encoder.encode(signupRequest.getPassword()))
@@ -70,6 +70,7 @@ public class AuthController {
 			Set<String> strRoles = signupRequest.getRole();
 			Set<Role> roles = new HashSet<>();
 			
+					
 			if (strRoles == null) {
 				Role userRole = roleRepository.findByName(ERole.ROLE_USER)
 						.orElseThrow(() -> new RuntimeException("Error: Role not found"));
@@ -78,18 +79,29 @@ public class AuthController {
 			} else {
 				
 				strRoles.forEach(role -> {
-					
-					switch (role) {
-						case "admin" : Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-								.orElseThrow(() -> new RuntimeException("Error: Role is not found "));
-						      roles.add(adminRole);
-						      break;
-						default: Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-									.orElseThrow(() -> new RuntimeException("Error: Role not found"));
-							  roles.add(userRole);
-							  break;
-						      
+			
+					if (role == "admin") {
+						 Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+									.orElseThrow(() -> new RuntimeException("Error: Role is not found "));
+							      roles.add(adminRole);
+					} else {
+						
+						Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+								.orElseThrow(() -> new RuntimeException("Error: Role not found"));
+						  roles.add(userRole);
+						
 					}
+//					switch (role) {
+//						case "admin" : Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+//								.orElseThrow(() -> new RuntimeException("Error: Role is not found "));
+//						      roles.add(adminRole);
+//						      break;
+//						default: Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+//									.orElseThrow(() -> new RuntimeException("Error: Role not found"));
+//							  roles.add(userRole);
+//							  break;
+//						      
+//					}
 				});
 				
 				
@@ -97,6 +109,8 @@ public class AuthController {
 				
 			}
 			
+			myUser.setRoles(roles);
+			userRepository.save(myUser);
 			
 			
 //			user.setRoles(roles);
