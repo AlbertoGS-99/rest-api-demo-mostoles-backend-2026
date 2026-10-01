@@ -1,7 +1,9 @@
 package com.example.spring_security_jwt.controller;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,10 +24,13 @@ import com.example.spring_security_jwt.model.Role;
 import com.example.spring_security_jwt.model.User;
 import com.example.spring_security_jwt.payload.request.LogginRequest;
 import com.example.spring_security_jwt.payload.request.SignupRequest;
+import com.example.spring_security_jwt.payload.response.JwtResponse;
 import com.example.spring_security_jwt.payload.response.MessageResponse;
 import com.example.spring_security_jwt.repository.RoleRepository;
 import com.example.spring_security_jwt.repository.UserRepository;
 import com.example.spring_security_jwt.security.jwt.JwtUtils;
+import com.example.spring_security_jwt.security.service.UserDetailsImpl;
+import com.example.spring_security_jwt.security.service.UserDetailsServiceImpl;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -136,7 +141,25 @@ public class AuthController {
 			
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 			
-			return null;
+			String jwt = jwtUtils.generateJwtToken(authentication);
+			
+			UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+			
+			Set<String> roles = userDetails.getAuthorities().stream()
+					.map(item -> item.getAuthority())
+					.collect(Collectors.toSet());
+			
+			// Mostrar por la consola los roles del usuario
+			LOGGER.info("Roles del usuario: {}", roles);
+			
+			return ResponseEntity.ok(new JwtResponse(
+						jwt,
+						userDetails.getId(),
+						userDetails.getUsername(),
+						userDetails.getEmail(),
+						roles
+						
+					));
 		}
 }
 
