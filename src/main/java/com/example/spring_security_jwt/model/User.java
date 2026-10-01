@@ -36,7 +36,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @Data
 @Builder
-public class MyUser {
+public class User {
 	
 	private static final long serialVersionUID = 1L;
 	

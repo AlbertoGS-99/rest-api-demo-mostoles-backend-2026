@@ -9,7 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.example.spring_security_jwt.model.MyUser;
+import com.example.spring_security_jwt.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -34,7 +34,7 @@ public class UserDetailsImpl implements UserDetails {
 	
 	private Collection<? extends GrantedAuthority> authorities;
 	
-	public static UserDetails build(MyUser user) {
+	public static UserDetails build(User user) {
 		
 		List<GrantedAuthority> authorities = user.getRoles().stream()
 				.map(role -> new SimpleGrantedAuthority(role.getName().name()))

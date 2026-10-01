@@ -7,6 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.spring_security_jwt.model.ERole;
 import com.example.spring_security_jwt.model.Role;
-import com.example.spring_security_jwt.model.MyUser;
+import com.example.spring_security_jwt.model.User;
+import com.example.spring_security_jwt.payload.request.LogginRequest;
 import com.example.spring_security_jwt.payload.request.SignupRequest;
 import com.example.spring_security_jwt.payload.response.MessageResponse;
 import com.example.spring_security_jwt.repository.RoleRepository;
@@ -59,7 +63,7 @@ public class AuthController {
 			 * con las propiedades del JSON recibido en la peticion (signupRequest)
 			 */
 			
-			MyUser myUser = MyUser.builder()
+			User user = User.builder()
 					.username(signupRequest.getUsername())
 					.email(signupRequest.getEmail())
 					.password(encoder.encode(signupRequest.getPassword()))
@@ -109,17 +113,31 @@ public class AuthController {
 				
 			}
 			
-			myUser.setRoles(roles);
-			userRepository.save(myUser);
+			user.setRoles(roles);
+			userRepository.save(user);
 			
 			
-//			user.setRoles(roles);
-//			userRepository.save(user);
-			
-			return null;
+			return ResponseEntity.ok(new MessageResponse("User registered successfully"));
 			
 		}
 				
+
+		/**
+		 * Metodo que permite logearse a un usuario que se ha registrado previamente
+		 */
+		@SuppressWarnings("null")
+		@PostMapping("/signin")
+		public ResponseEntity<?> authenticateUser(@Valid @RequestBody LogginRequest logginRequest,
+				BindingResult result) {
+			
+			Authentication authentication = authenticationManager 
+					.authenticate(new UsernamePasswordAuthenticationToken(logginRequest.getUsername(), 
+							logginRequest.getPassword()));
+			
+			SecurityContextHolder.getContext().setAuthentication(authentication);
+			
+			return null;
+		}
 }
 
 
