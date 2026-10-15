@@ -9,13 +9,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 @NoArgsConstructor
-@AllArgsConstructor
+@AllArgsConstructor 
 @Data
 @Builder
 public class JwtResponse {
 	
 	private String token;
+
+	
 	private final String  type = "Bearer";
 	private long id;
 	private String username;

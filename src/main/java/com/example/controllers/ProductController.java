@@ -145,6 +145,21 @@ public class ProductController {
 	}
 
 	/**
+	 * El metodo siguiente va a responder a una peticion (request) del tipo:
+	 * 
+	 * http://localhost:8080/products/products-by-presentation?presentation=unidad
+	 */
+	@GetMapping("/products-by-presentation")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+	public ResponseEntity<List<Product>> productsByPresentation(
+			@RequestParam String presentation) {
+
+		List<Product> products = productService.findByPresentationName(presentation);
+
+		return ResponseEntity.ok(products);
+	}
+
+	/**
 	 * El metodo siguiente recupera un Producto por el id que se recibe como una
 	 * variable en la ruta, mediante un end point (url o uri) que tiene el formato
 	 * siguiente:
@@ -208,7 +223,8 @@ public class ProductController {
 	@PostMapping(consumes = "multipart/form-data")
 	@Transactional
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<RepresentationModel<?>> saveProduct(@Valid @RequestPart(name = "product") ProductDto productDto,
+	public ResponseEntity<RepresentationModel<?>> saveProduct(
+			@Valid @RequestPart(name = "product") ProductDto productDto,
 			BindingResult result,
 			@RequestPart(name = "file", required = false) MultipartFile imagenDelProducto) throws IOException {
 
@@ -342,69 +358,76 @@ public class ProductController {
 	 * 
 	 */
 
-//	@PutMapping("/{id}")
-//	@Transactional
-//	public ResponseEntity<Map<String, Object>> updateProduct(@Valid @RequestBody Product product, BindingResult results,
-//			@PathVariable Integer id) {
-//
-//		ResponseEntity<Map<String, Object>> responseEntity = null;
-//		Map<String, Object> responseAsMap = new HashMap<>();
-//
-//		// Comprobar si el producto recibido en el cuerpo de la peticion tiene errores
-//		if (results.hasErrors()) {
-//
-//			// Recuperar todos los errores que tiene el producto
-//			List<ObjectError> objectErrors = results.getAllErrors();
-//
-//			// Hay que recorrer la lista de ObjectError para recuperar los mensajes de error
-//			// por defecto que le voy a mostrar al cliente que ha hecho la peticion,
-//			// es decir, que ha enviado el producto mal formado
-//
-//			// Los mensajes de error tienen que ser almacenados en una lista donde cada
-//			// elemento de la lista
-//			// sea un String
-//
-//			List<String> mensajesError = new ArrayList<>();
-//
-//			objectErrors.stream().forEach(objectError -> mensajesError.add(objectError.getDefaultMessage()));
-//
-//			responseAsMap.put("errores", mensajesError);
-//			responseAsMap.put("product", product);
-//
-//			responseEntity = new ResponseEntity<Map<String, Object>>(responseAsMap, HttpStatus.BAD_REQUEST);
-//
-//			return responseEntity;
-//
-//		}
-//
-//		/**
-//		 * Si no hay errores vamos a actualizar el producto recibido y devolver
-//		 * informacion al respecto como se requiere para una API REST
-//		 */
-//
-//		try {
-//			product.setId(id);
-//			Product productoModoficado = productService.save(product);
-//			String mensaje = "El producto ha sido modificado exitosamente";
-//			responseAsMap.put("mensaje", mensaje);
-//			responseAsMap.put("product", productoModoficado);
-//			responseEntity = new ResponseEntity<Map<String, Object>>(responseAsMap, 	
-//					HttpStatus.OK);
-//		} catch (DataAccessException e) {
-//			String errorMessage = "El producto no se pudo modificar y la causa mas probable es: "
-//					+ e.getMostSpecificCause();
-//			responseAsMap.put("error", errorMessage);
-//			responseEntity = new ResponseEntity<Map<String, Object>>(responseAsMap, 
-//					HttpStatus.INTERNAL_SERVER_ERROR);
-//		}
-//
-//		return responseEntity;
-//	}
+	// @PutMapping("/{id}")
+	// @Transactional
+	// public ResponseEntity<Map<String, Object>> updateProduct(@Valid @RequestBody
+	// Product product, BindingResult results,
+	// @PathVariable Integer id) {
+	//
+	// ResponseEntity<Map<String, Object>> responseEntity = null;
+	// Map<String, Object> responseAsMap = new HashMap<>();
+	//
+	// // Comprobar si el producto recibido en el cuerpo de la peticion tiene
+	// errores
+	// if (results.hasErrors()) {
+	//
+	// // Recuperar todos los errores que tiene el producto
+	// List<ObjectError> objectErrors = results.getAllErrors();
+	//
+	// // Hay que recorrer la lista de ObjectError para recuperar los mensajes de
+	// error
+	// // por defecto que le voy a mostrar al cliente que ha hecho la peticion,
+	// // es decir, que ha enviado el producto mal formado
+	//
+	// // Los mensajes de error tienen que ser almacenados en una lista donde cada
+	// // elemento de la lista
+	// // sea un String
+	//
+	// List<String> mensajesError = new ArrayList<>();
+	//
+	// objectErrors.stream().forEach(objectError ->
+	// mensajesError.add(objectError.getDefaultMessage()));
+	//
+	// responseAsMap.put("errores", mensajesError);
+	// responseAsMap.put("product", product);
+	//
+	// responseEntity = new ResponseEntity<Map<String, Object>>(responseAsMap,
+	// HttpStatus.BAD_REQUEST);
+	//
+	// return responseEntity;
+	//
+	// }
+	//
+	// /**
+	// * Si no hay errores vamos a actualizar el producto recibido y devolver
+	// * informacion al respecto como se requiere para una API REST
+	// */
+	//
+	// try {
+	// product.setId(id);
+	// Product productoModoficado = productService.save(product);
+	// String mensaje = "El producto ha sido modificado exitosamente";
+	// responseAsMap.put("mensaje", mensaje);
+	// responseAsMap.put("product", productoModoficado);
+	// responseEntity = new ResponseEntity<Map<String, Object>>(responseAsMap,
+	// HttpStatus.OK);
+	// } catch (DataAccessException e) {
+	// String errorMessage = "El producto no se pudo modificar y la causa mas
+	// probable es: "
+	// + e.getMostSpecificCause();
+	// responseAsMap.put("error", errorMessage);
+	// responseEntity = new ResponseEntity<Map<String, Object>>(responseAsMap,
+	// HttpStatus.INTERNAL_SERVER_ERROR);
+	// }
+	//
+	// return responseEntity;
+	// }
 
 	@PutMapping(value = "/{id}", consumes = "multipart/form-data")
 	@Transactional
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<RepresentationModel<?>> updateProduct(@Valid @RequestPart(name = "product") ProductDto productDto,
+	public ResponseEntity<RepresentationModel<?>> updateProduct(
+			@Valid @RequestPart(name = "product") ProductDto productDto,
 			BindingResult result,
 			@RequestPart(name = "file", required = false) MultipartFile imagenDelProducto,
 			@PathVariable(name = "id", required = true) int product_id) throws IOException {
@@ -494,53 +517,54 @@ public class ProductController {
 		return responseEntity;
 
 	}
-	
-    /**==============================================================================================
-     * Metodo para eliminar un producto dado el id
-     */
-    @DeleteMapping("/{id}")
-    @Transactional
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<EntityModel<?>> deleteProducto(@PathVariable Integer id) {
 
-        ResponseEntity<EntityModel<?>> responseEntity = null;
-        var responseAsMap = new HashMap<String, Object>();
+	/**
+	 * ==============================================================================================
+	 * Metodo para eliminar un producto dado el id
+	 */
+	@DeleteMapping("/{id}")
+	@Transactional
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<EntityModel<?>> deleteProducto(@PathVariable Integer id) {
 
-        try {
+		ResponseEntity<EntityModel<?>> responseEntity = null;
+		var responseAsMap = new HashMap<String, Object>();
 
-            // recuperar el producto y comprobar si hay foto y eliminar el archivo
-            Product productToDelete = productService.findById(id);
+		try {
 
-            if (productToDelete == null) {
+			// recuperar el producto y comprobar si hay foto y eliminar el archivo
+			Product productToDelete = productService.findById(id);
 
-            responseAsMap.put("mensaje de error: ", "producto con id: " + id + " no encontrado.");
-            return new ResponseEntity<>(EntityModel.of(responseAsMap), HttpStatus.NOT_FOUND);
-        }
+			if (productToDelete == null) {
 
-            if (productToDelete.getProductImage() != null) {
-                fileUtil.eliminarArchivo(productToDelete.getProductImage());
-            }
+				responseAsMap.put("mensaje de error: ", "producto con id: " + id + " no encontrado.");
+				return new ResponseEntity<>(EntityModel.of(responseAsMap), HttpStatus.NOT_FOUND);
+			}
 
-            productService.delete(productService.findById(id));
-            String successMessage = "El producto con id " + id + ", ha sido eliminado";
-            responseAsMap.put("mensaje", successMessage);
+			if (productToDelete.getProductImage() != null) {
+				fileUtil.eliminarArchivo(productToDelete.getProductImage());
+			}
 
-            /**
-             * HATEOAS: envolver la respuesta en un EntityModel con un enlace hacia la
-             * coleccion de productos
-             */
-            Link allProductsLink = linkTo(methodOn(ProductController.class).dameProductos(null, null))
-                    .withRel("all-products");
-            responseEntity = new ResponseEntity<>(EntityModel.of(responseAsMap, allProductsLink), HttpStatus.OK);
-        } catch (DataAccessException e) {
-            String errorMessage = "No ha podido ser eliminado el producto cuyo id es: " + id
-                    + ", siendo la causa mas probable: " + e.getMostSpecificCause().getMessage();
-            responseAsMap.put("mensaje", errorMessage);
-            responseEntity = new ResponseEntity<>(EntityModel.of(responseAsMap),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+			productService.delete(productService.findById(id));
+			String successMessage = "El producto con id " + id + ", ha sido eliminado";
+			responseAsMap.put("mensaje", successMessage);
 
-        return responseEntity;
-    }
+			/**
+			 * HATEOAS: envolver la respuesta en un EntityModel con un enlace hacia la
+			 * coleccion de productos
+			 */
+			Link allProductsLink = linkTo(methodOn(ProductController.class).dameProductos(null, null))
+					.withRel("all-products");
+			responseEntity = new ResponseEntity<>(EntityModel.of(responseAsMap, allProductsLink), HttpStatus.OK);
+		} catch (DataAccessException e) {
+			String errorMessage = "No ha podido ser eliminado el producto cuyo id es: " + id
+					+ ", siendo la causa mas probable: " + e.getMostSpecificCause().getMessage();
+			responseAsMap.put("mensaje", errorMessage);
+			responseEntity = new ResponseEntity<>(EntityModel.of(responseAsMap),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		return responseEntity;
+	}
 
 }
