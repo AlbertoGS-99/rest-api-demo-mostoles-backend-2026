@@ -129,7 +129,7 @@ class ProductControllerExamenPractico4Test {
 	
 	
 	
-	 // mvn test -Dtest=ProductControllerExamenPractico4Test#testListarProductosPorPresentacionUsuarioNoAutenticado
+	 // mvnw test -Dtest=ProductControllerExamenPractico4Test#testListarProductosPorPresentacionUsuarioNoAutenticado
 	
 	@Test
 	@DisplayName("Listar productos por presentacion con usuario NO autenticado ")
@@ -154,7 +154,7 @@ class ProductControllerExamenPractico4Test {
 	
 	
 	
-	 // mvn test -Dtest=ProductControllerExamenPractico4Test#testListarProductosPorPresentacionUsuarioAutenticado
+	 // mvnw test -Dtest=ProductControllerExamenPractico4Test#testListarProductosPorPresentacionUsuarioAutenticado
 	  
 	
 	@Test
