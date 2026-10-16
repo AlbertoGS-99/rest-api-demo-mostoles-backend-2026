@@ -112,7 +112,6 @@ class ProductControllerTest {
 		
 		this.token = obtenerToken("admin1", "Temp2026$$##");
 		
-		this.userToken = obtenerToken("user1", "Temp2026$$##");
 		
 		// ------------------------------------------------------------------------
 		
